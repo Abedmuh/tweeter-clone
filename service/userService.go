@@ -4,18 +4,23 @@ import (
 	"crud-auth-go/models"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserSvcInter interface {
 	AddUser(user models.UserRegister, c *gin.Context, tx *sql.DB) (models.User, error)
-	Login(uuserLogin models.UserLogin, userDb models.User, c *gin.Context, tx *sql.DB) (string, error)
-	CheckUser(user string, c *gin.Context, tx *sql.DB)  (models.User, error)
+	RegistCheck(user string, c *gin.Context, tx *sql.DB) error
+	
+	LoginUserCheck(user string, c *gin.Context, tx *sql.DB) (models.User,error)
+	// PassCheck(user string, c *gin.Context, tx *sql.DB) error
+	Login(user models.UserLogin,userdb models.User , c *gin.Context, tx *sql.DB) (models.UserResLog, error)
 }
 
 type UserService struct {
@@ -31,16 +36,27 @@ func (us *UserService) AddUser(user models.UserRegister, c *gin.Context, tx *sql
 	if err!= nil {
     return newUser, err
   }
+	userid := uuid.New().String()
 
-	query:= `INSERT INTO users (name, password, phone, email)
-		VALUES ($1, $2, $3, $4) 
-		RETURNING id, name, password, phone, email
-	`
+	var query string
+	if user.CredentialsType == "email" {
+		query = `INSERT INTO users (id, name, password, email)
+			VALUES ($1, $2, $3, $4) 
+			RETURNING id, name, password, phone, email
+		`
+	} else {
+		query = `INSERT INTO users (id, name, password, phone)
+			VALUES ($1, $2, $3, $4) 
+			RETURNING id, name, password, phone, email
+		`
+	}
+
 	err = tx.QueryRow(query,
-		newUser.Name, 
+		userid,
+		user.Name, 
 		hashedPassword, 
-		newUser.Phone, 
-		newUser.Email).Scan(
+		user.CredentialsValues, 
+	  ).Scan(
 			&newUser.Id, 
 			&newUser.Name, 
 			&newUser.Password, 
@@ -54,19 +70,66 @@ func (us *UserService) AddUser(user models.UserRegister, c *gin.Context, tx *sql
   return newUser, nil
 }
 
-func (us *UserService) Login(userLogin models.UserLogin, userDb models.User , c *gin.Context, tx *sql.DB) (string, error) {
-	
-	err := bcrypt.CompareHashAndPassword([]byte(userLogin.Password), []byte(userDb.Password))
+func (us *UserService) RegistCheck(user string, c *gin.Context, tx *sql.DB) error {
+	var exists bool
+
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)`
+	err := tx.QueryRow(query, user).Scan(&exists)
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"message": "not match error"})
-		return "",errors.New("password salah")
+		return err
+	}
+	if !exists {
+		return nil
+	}
+	return errors.New("user already exists")
+}
+
+func (us *UserService) Login(userLogin models.UserLogin, userDb models.User , c *gin.Context, tx *sql.DB) (models.UserResLog, error) {
+	fmt.Println(userLogin.Password)
+	fmt.Println(userDb.Password)
+	err := bcrypt.CompareHashAndPassword([]byte(userDb.Password), []byte(userLogin.Password))
+	if err != nil {
+		return models.UserResLog{},errors.New("password salah")
 	}
 
+	token, err := generateToken(userDb.Id)
+	if err!= nil {
+    return models.UserResLog{}, err
+  }
+
+	resLog := models.UserResLog{
+		Email: userDb.Email,
+    Phone: userDb.Phone,
+    Name: userDb.Name,
+    AccessToken: token,
+	}
+
+  return resLog, nil
+}
+
+func (us *UserService) LoginUserCheck(user string, c *gin.Context, tx *sql.DB) (models.User,error) {
+	var userDb models.User
+  query := `SELECT * FROM users WHERE email = $1 OR phone = $1`
+  err := tx.QueryRow(query, user).Scan(
+    &userDb.Id, 
+    &userDb.Name, 
+    &userDb.Password, 
+    &userDb.Email,
+    &userDb.Phone, 
+	  &userDb.ImageUrl,
+		&userDb.FriendCount)
+  if err!= nil {
+    return userDb, err
+  }
+  return userDb, nil
+}
+
+func generateToken(userid string) (string,error) {
 	secretKey := viper.GetString("JWT_SECRET_KEY")
 	timeExp := viper.GetDuration("JWT_TIME_EXP")
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userid": userDb.Id,
+		"user": userid,
     "exp": time.Now().Add(time.Duration(timeExp) * time.Hour).Unix(), 
 	})
 
@@ -75,23 +138,5 @@ func (us *UserService) Login(userLogin models.UserLogin, userDb models.User , c 
 		return "", err
 	}
 
-  return signedToken, nil
-}
-
-func (us *UserService) CheckUser(user string, c *gin.Context, tx *sql.DB) (models.User, error) {
-	var newUser models.User
-
-
-	query := `SELECT id, name, password, phone, email FROM users WHERE phone = $1`
-	err := tx.QueryRow(query, user).Scan(
-    &newUser.Id, 
-    &newUser.Name, 
-    &newUser.Password, 
-    &newUser.Phone,
-		&newUser.Email)
-	
-  if err!= nil {
-    return models.User{}, err
-  }
-  return newUser, nil
+	return signedToken, nil
 }

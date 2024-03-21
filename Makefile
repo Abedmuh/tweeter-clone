@@ -8,5 +8,6 @@ PG_DATABASE := $(or $(PG_DATABASE), crud-auth-go)
 build:
 	go build -o main
 
-migrate up:
+migrate_up:
 	migrate -path db/migrations -database "postgresql://$(PG_USERNAME):$(PG_PASSWORD)@$(PG_HOST):$(PG_PORT)/$(PG_DATABASE)?sslmode=disable" up
+

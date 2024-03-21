@@ -22,6 +22,9 @@ func main() {
 	v1 := gin.Group("v1")
 	{
 		routes.UserRoutes(v1,db,validate)
+		routes.FriendRoutes(v1,db,validate)
 	}
+
+	gin.Run(":8000")
 
 }

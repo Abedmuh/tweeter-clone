@@ -40,7 +40,7 @@ func (u *UserController) PostUser(c *gin.Context) {
     return
   }
 
-  if _,err := u.UserService.CheckUser(user.CredentialsValues,c, u.DB); err!= nil {
+  if err := u.UserService.RegistCheck(user.CredentialsValues,c, u.DB); err!= nil {
     c.JSON(400, gin.H{"error": err.Error()})
     return
   }
@@ -53,7 +53,7 @@ func (u *UserController) PostUser(c *gin.Context) {
   }
 
   c.JSON(200, gin.H{
-		"message": "User Created",
+		"message": "User registered successfully",
 	  "data": newUser,
   })
 }
@@ -70,28 +70,24 @@ func (u *UserController) PostLogin(c *gin.Context) {
     return
   }
 	
-	newUser, err := u.UserService.CheckUser(string(user.CredentialsValues),c, u.DB)
+	newUser, err := u.UserService.LoginUserCheck(string(user.CredentialsValues),c, u.DB)
   if err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.JSON(400, gin.H{
+			"message": "login user check",
+			"error": err.Error(),
+		})
     return
   }
 
 	//main
-  token, err := u.UserService.Login(user,newUser,c,u.DB)
+  result, err := u.UserService.Login(user,newUser,c,u.DB)
   if err!= nil {
     c.JSON(400, gin.H{"error": err.Error()})
     return
   }
 
-	result := models.UserResLog{
-		Email: newUser.Email,
-		Phone: newUser.Phone,
-		Name: newUser.Name,
-		AccessToken: token,
-	}
-
 	c.JSON(200, gin.H{
-    "message": "User Created",
+    "message": "User logged successfully",
     "data": result,
   })
 }
