@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"crud-auth-go/controllers"
-	"crud-auth-go/middleware"
-	"crud-auth-go/service"
 	"database/sql"
+	"tweet-clone/controllers"
+	"tweet-clone/middleware"
+	"tweet-clone/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

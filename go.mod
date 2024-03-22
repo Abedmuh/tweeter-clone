@@ -1,4 +1,4 @@
-module crud-auth-go
+module tweet-clone
 
 go 1.21.4
 

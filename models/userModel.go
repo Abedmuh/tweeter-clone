@@ -22,8 +22,8 @@ type User struct {
 type UserRegister struct {
 	CredentialsType   Status `json:"credentialType" validate:"required"`
 	CredentialsValues string `json:"credentialValues" validate:"required"`
-	Name              string `json:"name" validate:"required"`
-	Password          string `json:"password" validate:"required"`
+	Name              string `json:"name" validate:"required,min=5,max=50"`
+	Password          string `json:"password" validate:"required,min=5,max=15"`
 }
 
 type UserLogin struct {

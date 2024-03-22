@@ -1,8 +1,8 @@
 package service
 
 import (
-	"crud-auth-go/models"
 	"database/sql"
+	"tweet-clone/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -61,7 +61,6 @@ func (ps *PostService) GetAllPost(c *gin.Context, tx *sql.DB) ([]models.Post, er
 			&post.Creator, 
 			&post.PostInHtml, 
 			pq.Array(&post.Tags),
-			&post.CommentId,
       &post.CreatedAt,
 		)
     if err!= nil {

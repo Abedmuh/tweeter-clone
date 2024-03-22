@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"crud-auth-go/controllers"
+	"tweet-clone/controllers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

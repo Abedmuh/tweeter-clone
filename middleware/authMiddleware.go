@@ -27,7 +27,6 @@ func Authentication() gin.HandlerFunc {
 		if err != nil {
 			c.AbortWithStatusJSON(401, gin.H{"error": "Unauthenticated"})
 		}
-		fmt.Println(token)
 		
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			c.Set("user", claims["user"])

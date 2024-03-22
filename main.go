@@ -1,8 +1,9 @@
 package main
 
 import (
-	"crud-auth-go/config"
-	"crud-auth-go/routes"
+	"tweet-clone/config"
+	"tweet-clone/middleware"
+	"tweet-clone/routes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -16,10 +17,11 @@ func main() {
   }
 	defer db.Close()
 
-	gin := gin.Default()
+	app := gin.Default()
+	app.Use(middleware.RecoveryMiddleware())
 	validate := validator.New()
 
-	v1 := gin.Group("v1")
+	v1 := app.Group("v1")
 	{
 		routes.UserRoutes(v1,db,validate)
 		routes.FriendRoutes(v1,db,validate)
@@ -27,6 +29,6 @@ func main() {
 		routes.ImageRoutes(v1,validate)
 	}
 
-	gin.Run(":8000")
+	app.Run(":8000")
 
 }

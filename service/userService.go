@@ -1,11 +1,11 @@
 package service
 
 import (
-	"crud-auth-go/models"
 	"database/sql"
 	"errors"
 	"fmt"
 	"time"
+	"tweet-clone/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

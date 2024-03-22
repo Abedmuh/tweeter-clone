@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"crud-auth-go/models"
-	"crud-auth-go/service"
 	"database/sql"
+	"tweet-clone/models"
+	"tweet-clone/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -42,7 +42,7 @@ func (u *UserController) PostUser(c *gin.Context) {
 
   if err := u.validate.Struct(user); err!= nil {
     c.JSON(400, gin.H{"error": err.Error()})
-    return
+		panic(err)
   }
 
   if err := u.UserService.RegistCheck(user.CredentialsValues,c, u.DB); err!= nil {
