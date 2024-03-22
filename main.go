@@ -23,6 +23,8 @@ func main() {
 	{
 		routes.UserRoutes(v1,db,validate)
 		routes.FriendRoutes(v1,db,validate)
+		routes.PostRoutes(v1,db,validate)
+		routes.ImageRoutes(v1,validate)
 	}
 
 	gin.Run(":8000")

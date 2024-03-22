@@ -6,7 +6,17 @@ type Post struct {
 	Creator    string    `json:"creator" validate:"required"`
 	PostInHtml string    `json:"postInHtml" validate:"required"`
 	Tags       []string  `json:"tags"`
-	CommentId  []string  `json:"commentId"`
+	CommentId  *[]string  `json:"commentId"`
 	CreatedAt  string    `json:"createdAt" validate:"required"`
-	UpdatedAt  string    `json:"updatedAt" validate:"required"`
+}
+
+//request
+type ReqPost struct {
+	PostInHtml string `json:"postInHtml" validate:"required"`
+	Tags       []string `json:"tags" validate:"required"`
+}
+
+type ReqComment struct {
+	PostId string `json:"postId" validate:"required"`
+	Comment string `json:"comment" validate:"required"`
 }

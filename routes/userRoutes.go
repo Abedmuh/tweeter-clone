@@ -2,6 +2,7 @@ package routes
 
 import (
 	"crud-auth-go/controllers"
+	"crud-auth-go/middleware"
 	"crud-auth-go/service"
 	"database/sql"
 
@@ -17,5 +18,11 @@ func UserRoutes(route *gin.RouterGroup, db *sql.DB, validate *validator.Validate
 	{
 		path.POST("/register", controler.PostUser)
 		path.POST("/login", controler.PostLogin)
+
+		path.POST("/link",middleware.Authentication(), controler.PostEmail)
+		path.POST("/link/phone",middleware.Authentication(), controler.PostPhone)
+
+		path.PATCH("", middleware.Authentication(), controler.PatchUser)
 	}
 }
+

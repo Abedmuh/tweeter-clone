@@ -12,6 +12,11 @@ import (
 type UserCtrlInter interface {
 	PostUser(c *gin.Context)
 	PostLogin(c *gin.Context)
+
+	PostEmail(c *gin.Context)
+	PostPhone(c *gin.Context)
+
+	PatchUser(c *gin.Context)
 }
 
 type UserController struct {
@@ -89,5 +94,72 @@ func (u *UserController) PostLogin(c *gin.Context) {
 	c.JSON(200, gin.H{
     "message": "User logged successfully",
     "data": result,
+  })
+}
+
+
+func (u *UserController) PostEmail(c *gin.Context) {
+	var req models.ReqUpEmail
+  if err := c.ShouldBindJSON(&req); err!= nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  if err := u.validate.Struct(req); err!= nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  if err := u.UserService.PatchEmail(req, c, u.DB); err!= nil {
+    c.JSON(400, gin.H{
+      "message": "fail to add email",
+      "error": err.Error(),
+    })
+    return
+  }
+  c.JSON(200, gin.H{
+    "message": "successfully add email",
+  })
+}
+
+func (u *UserController) PostPhone(c *gin.Context) {
+	var req models.ReqUpPhone
+  if err := c.ShouldBindJSON(&req); err!= nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  if err := u.validate.Struct(req); err!= nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  if err := u.UserService.PatchPhone(req, c, u.DB); err!= nil {
+    c.JSON(400, gin.H{
+      "message": "fail to add phone",
+      "error": err.Error(),
+    })
+    return
+  }
+  c.JSON(200, gin.H{
+    "message": "successfully add phone",
+  })
+}
+
+func (u *UserController) PatchUser(c *gin.Context) {
+	var req models.ReqPatchUser
+  if err := c.ShouldBindJSON(&req); err!= nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  if err := u.validate.Struct(req); err!= nil {
+    c.JSON(400, gin.H{"error": err.Error()})
+    return
+  }
+  if err := u.UserService.PatchUser(req, c, u.DB); err!= nil {
+    c.JSON(400, gin.H{
+      "message": "fail to patch user",
+      "error": err.Error(),
+    })
+    return
+  }
+  c.JSON(200, gin.H{
+    "message": "successfully patch user",
   })
 }

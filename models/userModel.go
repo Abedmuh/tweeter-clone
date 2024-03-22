@@ -32,6 +32,19 @@ type UserLogin struct {
 	Password          string `json:"password" validate:"required,min=5,max=50"`
 }
 
+type ReqUpEmail struct {
+	Email string `json:"email" validate:"required"`
+}
+
+type ReqUpPhone struct {
+	Phone string `json:"phone" validate:"required"`
+}
+
+type ReqPatchUser struct {
+	Name     string `json:"name" validate:"required, min=5, max50"`
+	ImageUrl string `json:"imageUrl" validate:"required"`
+}
+
 // respon
 type UserResLog struct {
 	Email       *string `json:"email"`

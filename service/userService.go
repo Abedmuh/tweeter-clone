@@ -19,8 +19,12 @@ type UserSvcInter interface {
 	RegistCheck(user string, c *gin.Context, tx *sql.DB) error
 	
 	LoginUserCheck(user string, c *gin.Context, tx *sql.DB) (models.User,error)
-	// PassCheck(user string, c *gin.Context, tx *sql.DB) error
 	Login(user models.UserLogin,userdb models.User , c *gin.Context, tx *sql.DB) (models.UserResLog, error)
+
+	PatchEmail(req models.ReqUpEmail,c *gin.Context, tx *sql.DB) error
+	PatchPhone(req models.ReqUpPhone,c *gin.Context, tx *sql.DB) error
+
+	PatchUser(req models.ReqPatchUser,c *gin.Context, tx *sql.DB) error
 }
 
 type UserService struct {
@@ -137,6 +141,48 @@ func generateToken(userid string) (string,error) {
 	if err != nil {
 		return "", err
 	}
-
 	return signedToken, nil
 }
+
+
+
+func (ps *UserService) PatchEmail(req models.ReqUpEmail,c *gin.Context, tx *sql.DB) error {
+	user,_ := c.Get("user")
+  creator := string(user.(string)) 
+
+  query := `UPDATE users SET email = $1 WHERE id = $2`
+  _, err := tx.ExecContext(c, query, req.Email, creator)
+  if err!= nil {
+    return err
+  }
+  return nil
+}
+
+func (ps *UserService) PatchPhone(req models.ReqUpPhone,c *gin.Context, tx *sql.DB) error {
+	user,_ := c.Get("user")
+  creator := string(user.(string)) 
+
+  query := `UPDATE users SET phone = $1 WHERE id = $2`
+  _, err := tx.ExecContext(c, query, req.Phone, creator)
+  if err!= nil {
+    return err
+  }
+  return nil
+}
+
+func (ps *UserService) PatchUser(req models.ReqPatchUser,c *gin.Context, tx *sql.DB) error {
+	user,_ := c.Get("user")
+  creator := string(user.(string)) 
+
+  query := `UPDATE users SET name = $1, image_url =$2 WHERE id = $3`
+  _, err := tx.ExecContext(c, query, 
+		req.Name,
+		req.ImageUrl, 
+		creator)
+  if err!= nil {
+    return err
+  }
+  return nil
+}
+
+

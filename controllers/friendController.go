@@ -58,7 +58,7 @@ func (f *FriendController) GetFriends(c *gin.Context) {
     return
   }
   c.JSON(400, gin.H{
-		"message": "berhasil menghapus teman",
+		"message": "berhasil mendapatkan teman",
 		"data": friend,
   })
 }
