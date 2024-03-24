@@ -20,14 +20,14 @@ type User struct {
 
 // request
 type UserRegister struct {
-	CredentialsType   Status `json:"credentialType" validate:"required"`
-	CredentialsValues string `json:"credentialValues" validate:"required"`
+	CredentialsType   Status `json:"credentialType" validate:"required,oneof=email phone"`
+	CredentialsValues string `json:"credentialValue" validate:"required"`
 	Name              string `json:"name" validate:"required,min=5,max=50"`
 	Password          string `json:"password" validate:"required,min=5,max=15"`
 }
 
 type UserLogin struct {
-	CredentialsType   Status `json:"credentialType" validate:"required"`
+	CredentialsType   Status `json:"credentialType" validate:"required,oneof=email phone"`
 	CredentialsValues string `json:"credentialValues" validate:"required,min=5,max=50"`
 	Password          string `json:"password" validate:"required,min=5,max=50"`
 }
@@ -49,6 +49,13 @@ type ReqPatchUser struct {
 type UserResLog struct {
 	Email       *string `json:"email"`
 	Phone       *string `json:"phone"`
+	Name        string  `json:"name"`
+	AccessToken string  `json:"accessToken"`
+}
+
+type ResRegUser struct {
+	Email       *string `json:"email,omitempty"`
+	Phone       *string `json:"phone,omitempty"`
 	Name        string  `json:"name"`
 	AccessToken string  `json:"accessToken"`
 }

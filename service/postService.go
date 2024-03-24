@@ -14,6 +14,7 @@ type PostSvcInter interface {
 	GetAllPost(c *gin.Context, tx *sql.DB) ([]models.Post, error)
 
 	AddComment(req models.ReqComment,c *gin.Context, tx *sql.DB) error
+	CheckPost(req string,c *gin.Context, tx *sql.DB) error
 }
 
 type PostService struct {}
@@ -86,4 +87,14 @@ func (ps *PostService) AddComment(req models.ReqComment,c *gin.Context, tx *sql.
     return err
   }
   return nil
+}
+
+func (ps *PostService) CheckPost(req string, c *gin.Context, tx *sql.DB) error {
+	var id string 
+	query := `SELECT id FROM posts WHERE id = $1`
+	err := tx.QueryRowContext(c, query, req).Scan(&id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

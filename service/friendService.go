@@ -2,6 +2,7 @@ package service
 
 import (
 	"database/sql"
+	"errors"
 	"tweet-clone/models"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,7 @@ import (
 type FriendSvcInter interface {
 	AddFriend(friend models.ReqFriend, c *gin.Context, tx *sql.DB) (models.Friend, error)
 	DeleteFriend(friend models.ReqFriend,c *gin.Context, tx *sql.DB)  error
-	GetFriends (c *gin.Context, tx *sql.DB) ([]models.Friend, error)
+	GetFriends (c *gin.Context, tx *sql.DB) ([]models.ResFriend, error)
 }
 
 type FriendService struct {
@@ -30,6 +31,9 @@ func (f *FriendService) AddFriend(friend models.ReqFriend, c *gin.Context, tx *s
 		Id: id,
 		UserId: string(user.(string)),
     FriendId: friend.UserId,
+	}
+	if newFriend.UserId == newFriend.FriendId {
+		return models.Friend{}, errors.New("cant add yourself as friend")
 	}
 
   query:= `INSERT INTO friends (id,user_id, friend_id)
@@ -56,33 +60,43 @@ func (f *FriendService) DeleteFriend(friend models.ReqFriend,c *gin.Context, tx 
 	userId := string(user.(string)) 
 
   query:= `DELETE FROM friends WHERE user_id = $1 AND friend_id = $2`
-  _, err := tx.Exec(query, userId, friend.UserId)
-  if err!= nil {
-    return err
-  }
+  result, err := tx.Exec(query, userId, friend.UserId)
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected, _ := result.RowsAffected(); rowsAffected == 0 {
+		return errors.New("friend not found")
+	}
   return nil
 }
 
-func (f *FriendService) GetFriends(c *gin.Context, tx *sql.DB) ([]models.Friend, error) {
+func (f *FriendService) GetFriends(c *gin.Context, tx *sql.DB) ([]models.ResFriend, error) {
 	user,_ := c.Get("user")
 	userId := string(user.(string)) 
-	var friends []models.Friend
+	var friends []models.ResFriend
 
-  query:= `SELECT * FROM friends WHERE user_id = $1`
+  query:= `SELECT users.id, users.name, users.imageUrl, users.friendCount, friends.created_at
+		FROM friends
+		JOIN users ON friends.friend_id = users.id
+		WHERE friends.user_id = $1
+	`
   rows, err := tx.Query(query, userId)
   if err!= nil {
     return friends, err
   }
   for rows.Next() {
-    var friend models.Friend
+    var user models.ResFriend
     err := rows.Scan(
-			&friend.Id, 
-			&friend.UserId, 
-			&friend.FriendId)
+			&user.Id,
+			&user.Name,
+			&user.ImageUrl,
+		  &user.FriendCount,
+			&user.CreatedAt)
     if err!= nil {
       return friends, err
     }
-    friends = append(friends, friend)
+    friends = append(friends, user)
   }
   return friends, nil
 }

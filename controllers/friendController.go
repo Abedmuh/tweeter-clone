@@ -32,17 +32,17 @@ func NewFriendController(FriendService service.FriendSvcInter,DB *sql.DB, valida
 func (f *FriendController) PostFriend(c *gin.Context) {
 	var friend models.ReqFriend
   if err := c.ShouldBindJSON(&friend); err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
 	}
   if err := f.validate.Struct(friend); err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
   }
 	
   newFriend, err := f.FriendService.AddFriend(friend, c, f.DB)
   if err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
   }
   c.JSON(200, gin.H{
@@ -54,7 +54,7 @@ func (f *FriendController) PostFriend(c *gin.Context) {
 func (f *FriendController) GetFriends(c *gin.Context) {
   friend, err := f.FriendService.GetFriends(c, f.DB)
   if err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
   }
   c.JSON(400, gin.H{
@@ -66,18 +66,18 @@ func (f *FriendController) GetFriends(c *gin.Context) {
 func (f *FriendController) DeleteFriend(c *gin.Context) {
 	var friend models.ReqFriend
 	if err := c.ShouldBindJSON(&friend); err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
 	}
 
 	if err := f.validate.Struct(friend); err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
   }
 
   err := f.FriendService.DeleteFriend(friend, c, f.DB)
   if err!= nil {
-    c.JSON(400, gin.H{"error": err.Error()})
+    c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
   }
 	c.JSON(400, gin.H{

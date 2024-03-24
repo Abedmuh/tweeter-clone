@@ -6,8 +6,13 @@ PG_PORT := $(or $(PG_PORT), 5432)
 PG_DATABASE := $(or $(PG_DATABASE), socialmedia)
 
 build:
+	set GOARCH=amd64
+	set GOOS=linux 
 	go build -o main
 
 migrate_up:
 	migrate -path db/migrations -database "postgresql://$(PG_USERNAME):$(PG_PASSWORD)@$(PG_HOST):$(PG_PORT)/$(PG_DATABASE)?sslmode=disable" up
+
+migrate_down:
+	migrate -path db/migrations -database "postgresql://$(PG_USERNAME):$(PG_PASSWORD)@$(PG_HOST):$(PG_PORT)/$(PG_DATABASE)?sslmode=disable" down
 

@@ -28,7 +28,5 @@ func main() {
 		routes.PostRoutes(v1,db,validate)
 		routes.ImageRoutes(v1,validate)
 	}
-
 	app.Run(":8000")
-
 }

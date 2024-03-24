@@ -69,6 +69,14 @@ func (p *PostController) PostComment(c *gin.Context) {
     c.JSON(400, gin.H{"error": err.Error()})
     return
   }
+
+	if err := p.PostService.CheckPost(req.PostId, c, p.DB); err!= nil {
+    c.JSON(404, gin.H{
+			"error": err.Error(),
+		})
+		return
+  }
+
   if err := p.PostService.AddComment(req, c, p.DB); err!= nil {
     c.JSON(400, gin.H{
 			"message": "fail to add comment",

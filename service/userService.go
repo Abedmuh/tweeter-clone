@@ -4,23 +4,21 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 	"tweet-clone/models"
+	"tweet-clone/utils"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserSvcInter interface {
-	AddUser(user models.UserRegister, c *gin.Context, tx *sql.DB) (models.User, error)
+	AddUser(user models.UserRegister, c *gin.Context, tx *sql.DB) (models.ResRegUser, error)
 	RegistCheck(user string, c *gin.Context, tx *sql.DB) error
 	
 	LoginUserCheck(user string, c *gin.Context, tx *sql.DB) (models.User,error)
 	Login(user models.UserLogin,userdb models.User , c *gin.Context, tx *sql.DB) (models.UserResLog, error)
-
+	
 	PatchEmail(req models.ReqUpEmail,c *gin.Context, tx *sql.DB) error
 	PatchPhone(req models.ReqUpPhone,c *gin.Context, tx *sql.DB) error
 
@@ -34,11 +32,12 @@ func NewUserService() UserSvcInter{
 	return &UserService{}
 }
 
-func (us *UserService) AddUser(user models.UserRegister, c *gin.Context, tx *sql.DB) (models.User, error) {
+func (us *UserService) AddUser(user models.UserRegister, c *gin.Context, tx *sql.DB) (models.ResRegUser, error) {
 	var newUser models.User
+	var resUser models.ResRegUser
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err!= nil {
-    return newUser, err
+    return resUser, err
   }
 	userid := uuid.New().String()
 
@@ -68,10 +67,19 @@ func (us *UserService) AddUser(user models.UserRegister, c *gin.Context, tx *sql
 			&newUser.Email)
 	
 	if err!= nil {
-    return newUser, err
+    return resUser, err
   }
 
-  return newUser, nil
+	token,_:= utils.GenerateToken(userid)
+
+	resUser = models.ResRegUser{
+		Email: newUser.Email,
+    Phone: newUser.Phone,
+		Name: newUser.Name,
+		AccessToken: token,
+	}
+
+  return resUser, nil
 }
 
 func (us *UserService) RegistCheck(user string, c *gin.Context, tx *sql.DB) error {
@@ -96,7 +104,7 @@ func (us *UserService) Login(userLogin models.UserLogin, userDb models.User , c 
 		return models.UserResLog{},errors.New("password salah")
 	}
 
-	token, err := generateToken(userDb.Id)
+	token, err := utils.GenerateToken(userDb.Id)
 	if err!= nil {
     return models.UserResLog{}, err
   }
@@ -127,24 +135,6 @@ func (us *UserService) LoginUserCheck(user string, c *gin.Context, tx *sql.DB) (
   }
   return userDb, nil
 }
-
-func generateToken(userid string) (string,error) {
-	secretKey := viper.GetString("JWT_SECRET_KEY")
-	timeExp := viper.GetDuration("JWT_TIME_EXP")
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user": userid,
-    "exp": time.Now().Add(time.Duration(timeExp) * time.Hour).Unix(), 
-	})
-
-	signedToken, err := token.SignedString([]byte(secretKey))
-	if err != nil {
-		return "", err
-	}
-	return signedToken, nil
-}
-
-
 
 func (ps *UserService) PatchEmail(req models.ReqUpEmail,c *gin.Context, tx *sql.DB) error {
 	user,_ := c.Get("user")

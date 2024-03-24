@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -16,6 +17,14 @@ func Authentication() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthenticated"})
 			return
 		}
+
+		if !strings.HasPrefix(tokenString, "Bearer ") {
+			c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token format"})
+			return
+		}
+
+		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+		fmt.Println(tokenString)
 
 		secretKey := viper.GetString("JWT_SECRET_KEY")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

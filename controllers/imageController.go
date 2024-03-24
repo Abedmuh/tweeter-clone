@@ -15,6 +15,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+type image struct {
+	ImageUrl string `json:"imageUrl"`
+}
+
 type ImageSvcInter interface {
 	PostImage(c *gin.Context)
 }
@@ -41,8 +45,13 @@ func (ic *ImageController) PostImage(c *gin.Context) {
 		return
 	}
 
+	result := image{
+		ImageUrl: url,
+	}
+
 	c.JSON(200, gin.H{
-		"imageUrl": url,
+		"message":"File uploaded sucessfully",
+		"data": result,
 	})
 }
 
@@ -51,7 +60,7 @@ func uploadFile(file *multipart.FileHeader) (string, error) {
 	accessKey := viper.GetString("S3_ID")
 	secretKey := viper.GetString("S3_SECRET_KEY")
 	baseUrl := viper.GetString("S3_BASE_URL")
-	region := "ap-southeast-1"
+	region := viper.GetString("S3_REGION")
 
 	// Create a new AWS session with the retrieved credentials
 	sess, err := session.NewSession(&aws.Config{
