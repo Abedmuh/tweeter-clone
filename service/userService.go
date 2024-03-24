@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"tweet-clone/models"
-	"tweet-clone/utils"
 
+	"github.com/Abedmuh/tweeter-clone/models"
+	"github.com/Abedmuh/tweeter-clone/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"

@@ -3,7 +3,6 @@ package config
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
@@ -15,7 +14,7 @@ func GetDBConnection() (*sql.DB, error) {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading .env file: %s", err)
+		fmt.Println(err.Error())
 	}
 
 	dbHost := viper.GetString("DB_HOST")

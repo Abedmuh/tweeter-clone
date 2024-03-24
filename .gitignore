@@ -1,4 +1,5 @@
 .env
 .gitignore
+vendor
 ap-southeast-1-bundle.pem
 Project-Sprint-Key.pem

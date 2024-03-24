@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"database/sql"
-	"tweet-clone/models"
-	"tweet-clone/service"
 
+	"github.com/Abedmuh/tweeter-clone/models"
+	"github.com/Abedmuh/tweeter-clone/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -52,6 +52,13 @@ func (f *FriendController) PostFriend(c *gin.Context) {
 }
 
 func (f *FriendController) GetFriends(c *gin.Context) {
+
+	// param, err := params(c)
+	// if err!= nil {
+  //   c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+  //   return
+  // }
+
   friend, err := f.FriendService.GetFriends(c, f.DB)
   if err!= nil {
     c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
@@ -83,5 +90,25 @@ func (f *FriendController) DeleteFriend(c *gin.Context) {
 	c.JSON(400, gin.H{
 		"message": "berhasil menghapus teman",
   })
-
 }
+
+// func params(c *gin.Context) (models.ParamFriend,error) {
+
+// 	param:= models.ParamFriend{
+// 		Limit:      5,
+// 		Offset:     0,
+// 		SortBy:     "createdAt",
+// 		OrderBy:    "desc",
+// 		OnlyFriend: false,
+// 	}
+
+// 	// limit
+// 	limitStr := c.DefaultQuery("limit", "5") // Menggunakan nilai default "5" jika parameter tidak tersedia
+// 	limit, err := strconv.Atoi(limitStr)
+// 	if err != nil {
+// 			return 0, errors.New("Invalid limit parameter")
+// 	}
+// 	if limit < 0 {
+// 			return 0, errors.New("Limit must be non-negative")
+// 	}
+// }

@@ -1,10 +1,9 @@
 package main
 
 import (
-	"tweet-clone/config"
-	"tweet-clone/middleware"
-	"tweet-clone/routes"
-
+	"github.com/Abedmuh/tweeter-clone/config"
+	"github.com/Abedmuh/tweeter-clone/middleware"
+	"github.com/Abedmuh/tweeter-clone/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )

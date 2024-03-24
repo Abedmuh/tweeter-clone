@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"tweet-clone/controllers"
-	"tweet-clone/middleware"
+	"github.com/Abedmuh/tweeter-clone/middleware"
 
+	"github.com/Abedmuh/tweeter-clone/controllers"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )

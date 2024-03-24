@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"database/sql"
-	"tweet-clone/models"
-	"tweet-clone/service"
 
+	"github.com/Abedmuh/tweeter-clone/models"
+	"github.com/Abedmuh/tweeter-clone/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )

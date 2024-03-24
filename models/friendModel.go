@@ -2,6 +2,19 @@ package models
 
 import "time"
 
+type (
+	SortBy string
+	OrderBy string
+) 
+
+const (
+	SortByFriendCount SortBy = "friendCount"
+	SortByCreatedAt   SortBy = "createdAt"
+	OrderByAsc OrderBy = "asc"
+	OrderByDesc OrderBy = "desc"
+)
+
+
 // main db
 type Friend struct {
 	Id       string `json:"id" validate:"required"`
@@ -20,4 +33,13 @@ type ResFriend struct {
 	ImageUrl    *string `json:"imageUrl"`
 	FriendCount *uint32 `json:"friendCount"`
 	CreatedAt 	*time.Time `json:"createdAt"`
+}
+
+type ParamFriend struct {
+	Limit      int    
+	Offset     int    
+	SortBy     SortBy 
+	OrderBy    OrderBy
+	OnlyFriend bool   
+	Search     string 
 }

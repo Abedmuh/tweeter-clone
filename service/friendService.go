@@ -3,8 +3,8 @@ package service
 import (
 	"database/sql"
 	"errors"
-	"tweet-clone/models"
 
+	"github.com/Abedmuh/tweeter-clone/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
