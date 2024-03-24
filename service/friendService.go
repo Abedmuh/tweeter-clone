@@ -80,6 +80,7 @@ func (f *FriendService) GetFriends(c *gin.Context, tx *sql.DB) ([]models.ResFrie
 		FROM friends
 		JOIN users ON friends.friend_id = users.id
 		WHERE friends.user_id = $1
+		ORDER BY friends.created_at
 	`
   rows, err := tx.Query(query, userId)
   if err!= nil {

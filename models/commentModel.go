@@ -6,5 +6,4 @@ type Comment struct {
 	PostId        string `json:"postId" validate:"required"`
 	CommentInHtml string `json:"commentInHtml" validate:"required"`
 	CreatedAt     string `json:"createdAt" validate:"required"`
-	UpdatedAt     string `json:"updatedAt" validate:"required"`
 }

@@ -51,7 +51,7 @@ func (u *UserController) PostUser(c *gin.Context) {
 			panic(err)
 		}
 	} else {
-		if err := u.validate.Var(user.CredentialsValues, "required"); err!= nil {
+		if err := u.validate.Var(user.CredentialsValues, "required,e164"); err!= nil {
 			c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
 			panic(err)
 		}

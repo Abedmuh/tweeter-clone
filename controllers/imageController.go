@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"mime/multipart"
 	"path/filepath"
 
@@ -36,8 +35,6 @@ func (ic *ImageController) PostImage(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	log.Println(file.Filename)
-	fmt.Printf("Type of f: %T\n", file.Filename)
 
 	url, err := uploadFile(file)
 	if err != nil {

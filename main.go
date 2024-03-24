@@ -19,6 +19,7 @@ func main() {
 	app := gin.Default()
 	app.Use(middleware.RecoveryMiddleware())
 	validate := validator.New()
+	app.MaxMultipartMemory = 2 << 20 
 
 	v1 := app.Group("v1")
 	{
