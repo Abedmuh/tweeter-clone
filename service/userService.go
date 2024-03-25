@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/Abedmuh/tweeter-clone/models"
 	"github.com/Abedmuh/tweeter-clone/utils"
@@ -73,6 +72,7 @@ func (us *UserService) AddUser(user models.UserRegister, c *gin.Context, tx *sql
 	token,_:= utils.GenerateToken(userid)
 
 	resUser = models.ResRegUser{
+		Id: newUser.Id,
 		Email: newUser.Email,
     Phone: newUser.Phone,
 		Name: newUser.Name,
@@ -97,8 +97,7 @@ func (us *UserService) RegistCheck(user string, c *gin.Context, tx *sql.DB) erro
 }
 
 func (us *UserService) Login(userLogin models.UserLogin, userDb models.User , c *gin.Context, tx *sql.DB) (models.UserResLog, error) {
-	fmt.Println(userLogin.Password)
-	fmt.Println(userDb.Password)
+
 	err := bcrypt.CompareHashAndPassword([]byte(userDb.Password), []byte(userLogin.Password))
 	if err != nil {
 		return models.UserResLog{},errors.New("password salah")

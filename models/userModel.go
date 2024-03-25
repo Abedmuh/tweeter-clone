@@ -54,6 +54,7 @@ type UserResLog struct {
 }
 
 type ResRegUser struct {
+	Id          string  `json:"id"`
 	Email       *string `json:"email,omitempty"`
 	Phone       *string `json:"phone,omitempty"`
 	Name        string  `json:"name"`

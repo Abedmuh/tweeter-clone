@@ -45,11 +45,13 @@ func (p *PostController) PostPost(c *gin.Context) {
     c.JSON(400, gin.H{"error": err.Error()})
     return
   }
-	if err := p.PostService.AddPost(req, c, p.DB); err != nil {
+	id, err := p.PostService.AddPost(req, c, p.DB);
+	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{
+		"id": id,
     "message": "successfully add post",
   })
 }
@@ -148,8 +150,8 @@ func (p *PostController) PostComment(c *gin.Context) {
     c.JSON(400, gin.H{"error": err.Error()})
     return
   }
-
-  if err := p.PostService.AddComment(req, c, p.DB); err!= nil {
+	id, err := p.PostService.AddComment(req, c, p.DB)
+  if err!= nil {
     c.JSON(400, gin.H{
 			"message": "fail to add comment",
 			"error": err.Error(),
@@ -158,6 +160,7 @@ func (p *PostController) PostComment(c *gin.Context) {
   }
   c.JSON(200, gin.H{
     "message": "successfully add comment",
+		"id": id,
   })
 }
 

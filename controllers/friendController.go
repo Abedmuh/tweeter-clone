@@ -64,7 +64,7 @@ func (f *FriendController) GetFriends(c *gin.Context) {
     c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
     return
   }
-  c.JSON(400, gin.H{
+  c.JSON(200, gin.H{
 		"message": "berhasil mendapatkan teman",
 		"data": friend,
   })

@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/Abedmuh/tweeter-clone/models"
 	"github.com/gin-gonic/gin"
@@ -35,6 +36,8 @@ func (f *FriendService) AddFriend(friend models.ReqFriend, c *gin.Context, tx *s
 	if newFriend.UserId == newFriend.FriendId {
 		return models.Friend{}, errors.New("cant add yourself as friend")
 	}
+	fmt.Println(newFriend.UserId)
+	fmt.Println(newFriend.FriendId)
 
   query:= `INSERT INTO friends (id,user_id, friend_id)
 		VALUES ($1, $2, $3)

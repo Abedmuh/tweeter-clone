@@ -12,7 +12,7 @@ import (
 )
 
 type PostSvcInter interface {
-	AddPost(req models.ReqPost,c *gin.Context, tx *sql.DB) error
+	AddPost(req models.ReqPost,c *gin.Context, tx *sql.DB) (string,error)
 	GetPosts(c *gin.Context, tx *sql.DB) ([]models.Post, error)
 	GetUserPosts(c *gin.Context, tx *sql.DB) ([]models.Post, error)
 	UpdatePost(req models.ReqPost , c *gin.Context, tx *sql.DB) (models.Post, error)
@@ -20,7 +20,7 @@ type PostSvcInter interface {
 	
 	GetPost(c *gin.Context, tx *sql.DB) (models.Post, error)
 	GetComments(id string, c *gin.Context, tx *sql.DB) ([]models.Comment, error)
-	AddComment(req models.ReqComment,c *gin.Context, tx *sql.DB) error
+	AddComment(req models.ReqComment,c *gin.Context, tx *sql.DB) (string,error)
 	DeleteComment(req string, c *gin.Context, tx *sql.DB) error
 
 	AuthoComment(req string,c *gin.Context, tx *sql.DB) error
@@ -33,7 +33,7 @@ func NewPostService() PostSvcInter{
   return &PostService{}
 }
 
-func (ps *PostService) AddPost(req models.ReqPost,c *gin.Context, tx *sql.DB) error {
+func (ps *PostService) AddPost(req models.ReqPost,c *gin.Context, tx *sql.DB) (string,error) {
 
 	id := uuid.New().String()
 	user,_ := c.Get("user")
@@ -46,9 +46,9 @@ func (ps *PostService) AddPost(req models.ReqPost,c *gin.Context, tx *sql.DB) er
 		req.PostInHtml,
 	  pq.Array(req.Tags))
   if err!= nil {
-    return err
+    return "",err
   }
-  return nil
+  return id, nil
 }
 
 func (ps *PostService) GetUserPosts(c *gin.Context, tx *sql.DB) ([]models.Post, error) {
@@ -167,7 +167,7 @@ func (ps *PostService) DeletePost(c *gin.Context, tx *sql.DB) error {
   }
   return nil
 }
-func (ps *PostService) AddComment(req models.ReqComment,c *gin.Context, tx *sql.DB) error {
+func (ps *PostService) AddComment(req models.ReqComment,c *gin.Context, tx *sql.DB) (string, error) {
 	id := uuid.New().String()
   user,_ := c.Get("user")
   creator := string(user.(string))
@@ -180,9 +180,9 @@ func (ps *PostService) AddComment(req models.ReqComment,c *gin.Context, tx *sql.
     param,
     req.Comment)
   if err!= nil {
-    return err
+    return "", err
   }
-  return nil
+  return id, nil
 }
 func (ps *PostService) GetPost(c *gin.Context, tx *sql.DB) (models.Post, error) {
 	var post models.Post
