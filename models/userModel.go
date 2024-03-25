@@ -41,7 +41,7 @@ type ReqUpPhone struct {
 }
 
 type ReqPatchUser struct {
-	Name     string `json:"name" validate:"required, min=5, max50"`
+	Name     string `json:"name" validate:"required"`
 	ImageUrl string `json:"imageUrl" validate:"required"`
 }
 

@@ -48,16 +48,10 @@ func (u *UserController) PostUser(c *gin.Context) {
 	if user.CredentialsType == "email" {
 		if err := u.validate.Var(user.CredentialsValues, "required,email"); err!= nil {
 			c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
-			panic(err)
-		}
-	} else {
-		if err := u.validate.Var(user.CredentialsValues, "required,e164"); err!= nil {
-			c.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
-			panic(err)
+			return
 		}
 	}
-
-
+	
   if err := u.UserService.RegistCheck(user.CredentialsValues,c, u.DB); err!= nil {
     c.AbortWithStatusJSON(409, gin.H{"error": err.Error()})
     return

@@ -16,11 +16,16 @@ func PostRoutes(route *gin.RouterGroup, db *sql.DB, validate *validator.Validate
 	controler := controllers.NewPostController(service, db,validate)
 
 	path := route.Group("/post")
-	path.Use(middleware.Authentication())
 	{
-		path.POST("/", controler.PostPost)
+		path.POST("/",middleware.Authentication(), controler.PostPost)
 		path.GET("/", controler.GetPosts)
+		path.GET("/:id",controler.GetUserPosts)
+		path.PUT("/:id",middleware.Authentication(), controler.PutPost)
+		path.DELETE("/:id",middleware.Authentication(), controler.DeletePost)
+
 		
-		path.POST("/comment", controler.PostComment)		
+		path.GET("/user/:id", controler.GetPost)
+		path.POST("/:id/comment",middleware.Authentication(), controler.PostComment)
+		path.DELETE("/comment/:id",middleware.Authentication(), controler.DeleteComment)
 	}
 }

@@ -85,7 +85,7 @@ func (us *UserService) AddUser(user models.UserRegister, c *gin.Context, tx *sql
 func (us *UserService) RegistCheck(user string, c *gin.Context, tx *sql.DB) error {
 	var exists bool
 
-	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)`
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE email = $1 OR phone = $1)`
 	err := tx.QueryRow(query, user).Scan(&exists)
 	if err != nil {
 		return err
@@ -164,7 +164,7 @@ func (ps *UserService) PatchUser(req models.ReqPatchUser,c *gin.Context, tx *sql
 	user,_ := c.Get("user")
   creator := string(user.(string)) 
 
-  query := `UPDATE users SET name = $1, image_url =$2 WHERE id = $3`
+  query := `UPDATE users SET name = $1, imageUrl =$2 WHERE id = $3`
   _, err := tx.ExecContext(c, query, 
 		req.Name,
 		req.ImageUrl, 
